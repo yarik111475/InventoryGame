@@ -32,7 +32,7 @@ void MainWindow::slotReorederModel(int oldRow, int oldColumn, int newRow, int ne
         int newCurrentValue=m_pInventoryModel->getInventoryItem(newRow,newColumn).getValue();
 
         m_pInventoryModel->setInventoryItem(newRow,newColumn, InventoryItem(newRow,newColumn, oldCurrentValue+newCurrentValue));
-        m_pInventoryModel->setInventoryItem(oldRow,oldColumn, InventoryItem(oldRow,oldColumn,0));
+        m_pInventoryModel->removeInventoryItem(oldRow,oldColumn);
     }
     else{
         int currentValue=m_pInventoryModel->getInventoryItem(newRow,newColumn).getValue();
