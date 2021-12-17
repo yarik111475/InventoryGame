@@ -21,7 +21,6 @@ QVariant InventoryModel::data(const QModelIndex &index, int role) const
     if(item.getValue() && role==Qt::DisplayRole){
         return item.getValue();
     }
-
     return QVariant();
 }
 
@@ -108,7 +107,9 @@ void InventoryModel::setInventoryItem(int row, int column, const InventoryItem& 
 {
     QModelIndex idx=index(row, column);
     if(idx.isValid()){
-        setData(idx, QVariant::fromValue(item), Qt::DisplayRole);
+        beginResetModel();
+        m_inventoryHash.insert(idx,QVariant::fromValue(item));
+        endResetModel();
     }
 }
 
@@ -116,11 +117,10 @@ void InventoryModel::removeInventoryItem(int row, int column)
 {
     QModelIndex idx=index(row, column);
     if(idx.isValid()){
-        InventoryItem item=m_inventoryHash[idx].value<InventoryItem>();
-        int oldValue=(item.getValue()==0) ? item.getValue() : item.getValue()-1;
-        item.setValue(oldValue);
-        setData(idx, QVariant::fromValue(item), Qt::DisplayRole);
-    }
+        beginResetModel();
+        m_inventoryHash.remove(idx);
+        endResetModel();
+    }  
 }
 
 QList<InventoryItem> InventoryModel::getInventoriyList() const
@@ -135,17 +135,24 @@ QList<InventoryItem> InventoryModel::getInventoriyList() const
 
 void InventoryModel::setInventoryList(const QList<InventoryItem> &inventoryList)
 {
+    beginResetModel();
     for(const InventoryItem& item : inventoryList){
         setInventoryItem(item.getRow(), item.getColumn(),item);
     }
+    endResetModel();
 }
 
 void InventoryModel::resetModel()
 {
+    beginResetModel();
     for(int row=0;row<rowCount(QModelIndex());row++){
         for(int column=0;column<columnCount(QModelIndex());++column){
-            setInventoryItem(row, column, InventoryItem(row,column,0));
+            QModelIndex idx{index(row,column)};
+            if(idx.isValid()){
+                m_inventoryHash.remove(idx);
+            }
         }
     }
+    endResetModel();
 }
 

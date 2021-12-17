@@ -48,7 +48,13 @@ void MainWindow::slotEatItem(int row, int column)
     }
     QSound::play(":/sounds/apple.wav");
     currentValue-=1;
-    m_pInventoryModel->setInventoryItem(row, column, InventoryItem(row, column,currentValue));
+    if(currentValue==0){
+        m_pInventoryModel->removeInventoryItem(row, column);
+    }
+    else{
+         m_pInventoryModel->setInventoryItem(row, column, InventoryItem(row, column,currentValue));
+    }
+
 }
 
 MainWindow::MainWindow(QWidget *parent)
