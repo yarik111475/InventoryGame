@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/qt.png</file>
+        <file>images/apple.jpg</file>
+        <file>sounds/apple.wav</file>
+        <file>images/apple.ico</file>
+    </qresource>
+</RCC>
