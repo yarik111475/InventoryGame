@@ -58,8 +58,6 @@ void InventoryView::dropEvent(QDropEvent *event)
     QTableView::dropEvent(event);
 }
 
-
-
 InventoryView::InventoryView(QWidget *parent)
     :QTableView(parent),m_externalMove{false},m_leftPressed{false},
       m_oldRow{-1}, m_oldColumn{-1}, m_newRow{-1},m_newColumn{-1}

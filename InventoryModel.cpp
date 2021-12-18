@@ -24,19 +24,6 @@ QVariant InventoryModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-bool InventoryModel::setData(const QModelIndex &index,
-                             const QVariant &value, int role)
-{
-    Q_UNUSED(role)
-    if(index.isValid()){
-        m_inventoryHash[index]=value;
-
-        emit dataChanged(index,index);
-        return true;
-    }
-    return false;
-}
-
 int InventoryModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
@@ -154,5 +141,10 @@ void InventoryModel::resetModel()
         }
     }
     endResetModel();
+}
+
+bool InventoryModel::isEmpty()
+{
+    return m_inventoryHash.isEmpty();
 }
 

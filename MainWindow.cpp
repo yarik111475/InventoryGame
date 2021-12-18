@@ -1,4 +1,8 @@
 #include "MainWindow.h"
+#include "InventoryModel.h"
+#include "InventoryLabel.h"
+#include "InventoryView.h"
+#include "InventoryBase.h"
 
 
 void MainWindow::slotStartGame()
@@ -15,7 +19,7 @@ void MainWindow::slotResetGame()
 
 void MainWindow::slotQuit()
 {
-    qApp->quit();
+    close();
 }
 
 void MainWindow::slotMainMenu()
@@ -134,7 +138,35 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_pInventoryGroupBox->setEnabled(false);
     m_pGameFieldGroupBox->setEnabled(false);
+
+    tryLoadGame();
     resize(570,517);
+}
+
+void MainWindow::tryLoadGame()
+{
+    m_pInventoryBase=InventoryBase::getInstance();
+    if(m_pInventoryBase->isValid()){
+        QList<InventoryItem> inventoryList=m_pInventoryBase->loadInventoryList();
+        if(inventoryList.isEmpty()){
+            return;
+        }
+        else{
+            auto result=QMessageBox::question(this,QObject::tr("Load"),
+                                  QObject::tr("Found previous saved game.\nLoad it into game field?"),
+                                  QMessageBox::Yes|QMessageBox::No);
+            switch(result){
+            case QMessageBox::Yes:
+                m_pInventoryModel->setInventoryList(inventoryList);
+                slotStartGame();
+                break;
+            case QMessageBox::No:
+                break;
+            default:
+                break;
+            }
+        }
+    }
 }
 
 MainWindow::~MainWindow()
@@ -145,5 +177,38 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 {
     qDebug()<<"width: " + QString::number(event->size().width());
     qDebug()<<"height: " + QString::number(event->size().height());
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(m_pInventoryModel && !m_pInventoryModel->isEmpty()){
+        auto result=QMessageBox::question(this,
+                                          QObject::tr("Save"),
+                                          QObject::tr("The game is running.\nSave it before quit?"),
+                                          QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+        switch(result){
+        case QMessageBox::No:
+            event->accept();
+            break;
+        case QMessageBox::Yes:
+            m_pInventoryBase=InventoryBase::getInstance();
+            if(m_pInventoryBase->isValid()){
+                m_pInventoryBase->clearInventory();
+                m_pInventoryBase->saveInventoryList(m_pInventoryModel->getInventoriyList());
+            }
+            event->accept();
+            break;
+        case QMessageBox::Cancel:
+            event->ignore();
+            break;
+        }
+    }
+    else{
+        m_pInventoryBase=InventoryBase::getInstance();
+        if(m_pInventoryBase->isValid()){
+            m_pInventoryBase->clearInventory();
+        }
+        event->accept();
+    }
 }
 

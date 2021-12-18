@@ -6,9 +6,12 @@
 #include <QtWidgets>
 #include <QSound>
 
-#include "InventoryModel.h"
-#include "InventoryLabel.h"
-#include "InventoryView.h"
+
+
+class InventoryModel;
+class InventoryLabel;
+class InventoryView;
+class InventoryBase;
 
 class MainWindow : public QMainWindow
 {
@@ -17,6 +20,7 @@ private:
     const int BASE_SIZE=100;
     InventoryModel* m_pInventoryModel;
     InventoryView* m_pInventoryView;
+    InventoryBase* m_pInventoryBase;
 
     QGroupBox* m_pControlButtonsGroupBox;
     QGroupBox* m_pGameFieldGroupBox;
@@ -31,8 +35,10 @@ private slots:
     void slotEatItem(int row, int column);
 public:
     MainWindow(QWidget *parent = nullptr);
+    void tryLoadGame();
     ~MainWindow();
 protected:
     virtual void resizeEvent(QResizeEvent *event)override;
+    virtual void closeEvent(QCloseEvent *event)override;
 };
 #endif // MAINWINDOW_H
