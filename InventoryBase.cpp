@@ -123,12 +123,7 @@ void InventoryBase::clearInventory()
             QString queryText="DELETE FROM 'inventoryTable'";
             QSqlQuery query(database);
             query.prepare(queryText);
-            if(query.exec()){
-                m_isValid=true;
-            }
-            else{
-                m_isValid=false;
-            }
+            query.exec();
         }
     }
     QSqlDatabase::removeDatabase(connectionName);
